@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="
+	       http://www.springframework.org/schema/beans
+	       http://www.springframework.org/schema/beans/spring-beans.xsd
+	       http://www.springframework.org/schema/context
+	       http://www.springframework.org/schema/context/spring-context.xsd
+	       http://www.springframework.org/schema/mvc
+           http://www.springframework.org/schema/mvc/spring-mvc.xsd
+	       
+       ">
+	<bean id="dataSource"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<property name="url" value="jdbc:mysql://localhost:3306/lanqiao" />
+		<property name="username" value="root" />
+		<property name="password" value="root" />
+	</bean>
+
+	<!-- myBatis -->
+	<bean id="myBatisSpring" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<bean id="myMapper" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<!-- value: myBatis 中的 mapper所在包路径 -->
+		<property name="basePackage" value="com.bd.UserDao" />
+	</bean>
+
+	<!-- IOC组件扫描:指明去哪扫描向IOC容器进行注册的组件，注册过的bean将由容器生成 -->
+	<context:component-scan base-package="com.bd"></context:component-scan>
+	<!-- 激活各种注解 -->
+	<context:annotation-config></context:annotation-config>
+	
+	<!-- Spring MVC -->				      					
+	<mvc:annotation-driven/>
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <!--前缀  -->
+        <property name="prefix" value="/" />
+        <!--后缀  -->
+        <property name="suffix" value=".jsp" />
+    </bean>
+	<!-- json支持: 服务器直接将数据转为成json型返回 ,在js中直接得到js类型数据-->
+	<bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter"/>
+
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<!-- 设置文件上传的最大尺寸为1M -->
+		<property name="maxUploadSize" value="10485760"/>
+	</bean>
+	
+</beans>
